@@ -1,0 +1,25 @@
+{
+  "name": "wda_group-project",
+  "version": "1.0.0",
+  "description": "Project for webdevelopment advanced.",
+  "homepage": "https://github.com/alma23nz/WDA_Group-project#readme",
+  "bugs": {
+    "url": "https://github.com/alma23nz/WDA_Group-project/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alma23nz/WDA_Group-project.git"
+  },
+  "license": "ISC",
+  "author": "Anisa, Hamda, Maha, Moa",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "sqlite3": "^5.1.7"
+  }
+}
