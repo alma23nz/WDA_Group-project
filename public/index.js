@@ -14,7 +14,6 @@ fetch("stores.json")
       } else {
         url = "https://" + item.url;
       }
-
       const div = document.createElement("div");
       div.innerHTML = `
         <h3>${item.name}</h3>
