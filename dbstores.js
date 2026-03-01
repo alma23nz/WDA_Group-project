@@ -35,7 +35,7 @@ function createTable() {
     .then(() => console.log('Table "stores" created or already exists'))
     .catch((err) => console.error("Error creating table", err.stack));
 }
-createTable();
+// createTable();
 
 async function insertStoresFromJSON() {
   try {
