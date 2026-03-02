@@ -16,7 +16,7 @@ app.get("/" , (req , res)=>{
 app.get("/api/stores", (req, res) => {
   res.json(stores);
 });
-app.get("/api/products/:id", (req,res)=>{
+app.get("/api/stores/:id", (req,res)=>{
     let storesID= parseInt(req.params.id);
     let store = stores.find(p=>p.id === storesID);
 
@@ -25,7 +25,80 @@ app.get("/api/products/:id", (req,res)=>{
     }else{
         res.status(404).json({message: "store not found"});
     }
+});
 
+app.post("/api/stores", (req, res) => {
+
+  const { name, url , district} = req.body;
+
+  if (!name || !url || !district ) {
+    return res.status(400).json({
+      message: "Name and price are required!"
+    });
+  }
+
+  const newStore = {
+    id: stores.length + 1,
+    name,
+    url,
+    district
+  };
+
+  stores.push(newStore);
+
+  res.json({
+    message: 'POST - created a new item',
+    data: newStore
+  });
+
+});
+app.put("/api/stores/:id", (req, res) => {
+
+  const storesID = parseInt(req.params.id);
+  const updatedData = req.body;
+
+  const store = stores.find(s => s.id === storesID);
+
+  if (!store) {
+    return res.status(404).json({
+      message: "store not found"
+    });
+  }
+
+  if (updatedData.name !== undefined) {
+    store.name = updatedData.name;
+  }
+
+  if (updatedData.url !== undefined) {
+    store.url = updatedData.url;
+  }
+  if (updatedData.district !== undefined) {
+    store.district = updatedData.district;
+  }
+
+  res.json({
+    message: `PUT - Updated item with ID ${storesID}`,
+    data: store
+  });
+
+});
+
+app.delete("/api/stores/:id", (req, res) => {
+    const storesID = parseInt(req.params.id);
+
+    const index = stores.findIndex(s => s.id === storesID);
+
+    if (index === -1) {
+    return res.status(404).json({ error: "store not found." });
+    }
+
+
+    const deletedStore = store.splice(index, 1)[0];
+
+    res.json({
+        message: "store deleted successfully!",
+        product: deletedStore
+    });
 });
 
 
