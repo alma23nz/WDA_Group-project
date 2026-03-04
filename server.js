@@ -5,6 +5,7 @@ const sqlite3 = require("sqlite3")
 const cors = require("cors")
 
 const stores = require("./stores.json");
+const storesDB = require("./dbstores")
 
 app.use(express.json());
 app.use(express.static("public"));
@@ -13,8 +14,15 @@ app.get("/", (req, res) => {
   res.send("welcom to the rest API");
 });
 
-app.get("/api/stores", (req, res) => {
-  res.json(stores);
+// Get all stores
+app.get("/stores", async (req, res) => {
+  try {
+    const stores = await storesDB.selectRecords();
+    res.json(stores);
+  } catch (err) {
+    console.error("Error fetching stores:", err);
+    res.status(500).json({ error: "Failed to fetch stores" });
+  }
 });
 app.get("/api/stores/:id", (req, res) => {
   let storesID = parseInt(req.params.id);
@@ -26,6 +34,7 @@ app.get("/api/stores/:id", (req, res) => {
     res.status(404).json({ message: "store not found" });
   }
 });
+
 
 app.post("/api/stores", (req, res) => {
 
