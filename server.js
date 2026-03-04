@@ -1,37 +1,37 @@
 const express = require("express");
-const app = express() ;
+const app = express();
 const PORT = 3000;
-const sqlite3 =require ("sqlite3")
+const sqlite3 = require("sqlite3")
 const cors = require("cors")
 
 const stores = require("./stores.json");
 
-app.use(express.json());   
+app.use(express.json());
 app.use(express.static("public"));
 
-app.get("/" , (req , res)=>{
-    res.send("welcom to the rest API");
+app.get("/", (req, res) => {
+  res.send("welcom to the rest API");
 });
 
 app.get("/api/stores", (req, res) => {
   res.json(stores);
 });
-app.get("/api/stores/:id", (req,res)=>{
-    let storesID= parseInt(req.params.id);
-    let store = stores.find(p=>p.id === storesID);
+app.get("/api/stores/:id", (req, res) => {
+  let storesID = parseInt(req.params.id);
+  let store = stores.find(p => p.id === storesID);
 
-    if(store){
-        res.json(store);
-    }else{
-        res.status(404).json({message: "store not found"});
-    }
+  if (store) {
+    res.json(store);
+  } else {
+    res.status(404).json({ message: "store not found" });
+  }
 });
 
 app.post("/api/stores", (req, res) => {
 
-  const { name, url , district} = req.body;
+  const { name, url, district } = req.body;
 
-  if (!name || !url || !district ) {
+  if (!name || !url || !district) {
     return res.status(400).json({
       message: "Name and price are required!"
     });
@@ -84,21 +84,21 @@ app.put("/api/stores/:id", (req, res) => {
 });
 
 app.delete("/api/stores/:id", (req, res) => {
-    const storesID = parseInt(req.params.id);
+  const storesID = parseInt(req.params.id);
 
-    const index = stores.findIndex(s => s.id === storesID);
+  const index = stores.findIndex(s => s.id === storesID);
 
-    if (index === -1) {
+  if (index === -1) {
     return res.status(404).json({ error: "store not found." });
-    }
+  }
 
 
-    const deletedStore = store.splice(index, 1)[0];
+  const deletedStore = store.splice(index, 1)[0];
 
-    res.json({
-        message: "store deleted successfully!",
-        product: deletedStore
-    });
+  res.json({
+    message: "store deleted successfully!",
+    product: deletedStore
+  });
 });
 
 
