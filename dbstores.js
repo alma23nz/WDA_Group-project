@@ -21,19 +21,22 @@ async function connectDB() {
 }
 connectDB(); // should be called before any other function
 
-function createTable() {
+async function createTable() {
   const createTableQuery = `
-  CREATE TABLE IF NOT EXISTS stores (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(500),
-  url VARCHAR(1000),
-  district VARCHAR(50)
-  );
+    CREATE TABLE IF NOT EXISTS stores (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(500),
+      url VARCHAR(1000),
+      district VARCHAR(50)
+    );
   `;
-  client
-    .query(createTableQuery) // try await would also work with async
-    .then(() => console.log('Table "stores" created or already exists'))
-    .catch((err) => console.error("Error creating table", err.stack));
+
+  try {
+    await client.query(createTableQuery);
+    console.log('Table "stores" created or already exists');
+  } catch (err) {
+    console.error("Error creating table", err.stack);
+  }
 }
 // createTable();
 
@@ -51,8 +54,28 @@ async function insertStoresFromJSON() {
     console.error("Error inserting rows:", error);
   }
 }
+////insertStoresFromJSON()
 
-insertStoresFromJSON();
+async function selectRecords() {
+const selectQuery = 'SELECT * FROM stores;';
+try {
+const res = await client.query(selectQuery);
+return res.rows; 
+console.log('All stores:', res.rows);
+} catch (err) {
+console.error('Error selecting records', err.stack);
+}
+}
+selectRecords()
+
+module.exports = { selectRecords };
+
+async function getStoreByID(id) {
+  const result = await client.query("SELECT * FROM stores WHERE id = $1", [id]);
+  return result.rows[0] || null;
+}
+//getStoreByID()
+
 
 async function deleteTable() {
   try {
@@ -63,4 +86,13 @@ async function deleteTable() {
   }
 }
 
-//deleteTable();
+// deleteTable();
+
+// function deleteRecord(id) {
+// // id is the primary key of the record to delete
+// const deleteQuery = 'DELETE FROM employees WHERE id = $1;';
+// client.query(deleteQuery, [id])
+// .then(() => console.log('Record deleted with then()'))
+// .catch(err => console.error('Error deleting record', err.stack));
+// }
+// deleteRecord(someID);
