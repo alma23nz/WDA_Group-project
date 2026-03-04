@@ -5,6 +5,7 @@ const sqlite3 =require ("sqlite3")
 const cors = require("cors")
 
 const stores = require("./stores.json");
+const storesDB = require("./dbstores")
 
 app.use(express.json());   
 app.use(express.static("public"));
@@ -13,19 +14,30 @@ app.get("/" , (req , res)=>{
     res.send("welcom to the rest API");
 });
 
-app.get("/api/stores", (req, res) => {
-  res.json(stores);
+// Get all stores
+app.get("/stores", async (req, res) => {
+  try {
+    const stores = await storesDB.selectRecords();
+    res.json(stores);
+  } catch (err) {
+    console.error("Error fetching stores:", err);
+    res.status(500).json({ error: "Failed to fetch stores" });
+  }
 });
-app.get("/api/stores/:id", (req,res)=>{
-    let storesID= parseInt(req.params.id);
-    let store = stores.find(p=>p.id === storesID);
 
-    if(store){
-        res.json(store);
-    }else{
-        res.status(404).json({message: "store not found"});
-    }
+
+// Get store by ID
+app.get("/api/stores/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  try {
+    const store = await storesDB.getStoreByID(id);
+    if (!store) return res.status(404).json({ message: "Store not found" });
+    res.json(store);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
+
 
 app.post("/api/stores", (req, res) => {
 
