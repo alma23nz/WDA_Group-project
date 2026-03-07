@@ -13,9 +13,8 @@ async function fetchStores() {
     stores.forEach((store) => {
       // Create a div for each store
       const storeDiv = document.createElement("div");
-      storeDiv.classList.add("store"); // optional: for styling
 
-      // Create a UL for the store properties
+      // Create a UL
       const ul = document.createElement("ul");
 
       // Name
@@ -28,7 +27,7 @@ async function fetchStores() {
       districtLi.textContent = `District: ${store.district}`;
       ul.appendChild(districtLi);
 
-      // URL as a clickable link using your logic
+      // URL as a clickable link
       let url = "#";
 
       if (store.url) {
@@ -41,9 +40,9 @@ async function fetchStores() {
 
       const urlLi = document.createElement("li");
       const link = document.createElement("a");
-      link.href = url; // link target
-      link.textContent = store.url; // link text
-      link.target = "_blank"; // open in new tab
+      link.href = url;
+      link.textContent = store.url;
+      link.target = "_blank";
       urlLi.textContent = "URL: ";
       urlLi.appendChild(link);
       ul.appendChild(urlLi);

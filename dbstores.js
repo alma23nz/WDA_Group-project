@@ -2,13 +2,13 @@ const fs = require("fs");
 const stores = require("./stores.json");
 
 const { Client } = require("pg");
-// Configure the client to connect to your containerized PostgreSQL
+
 const client = new Client({
-  host: "localhost", // since the container's port is mapped to localho
+  host: "localhost",
   port: 5432,
-  user: "postgres", // default user
-  password: "12345", // password set in the container command
-  database: "postgres", // default database
+  user: "postgres",
+  password: "12345",
+  database: "postgres",
 });
 
 async function connectDB() {
@@ -19,7 +19,7 @@ async function connectDB() {
     console.error("Connection error", err.stack);
   }
 }
-connectDB(); // should be called before any other function
+connectDB();
 
 async function createTable() {
   const createTableQuery = `
@@ -141,13 +141,4 @@ async function deleteTable() {
   }
 }
 
-// deleteTable();
-
-// function deleteRecord(id) {
-// // id is the primary key of the record to delete
-// const deleteQuery = 'DELETE FROM employees WHERE id = $1;';
-// client.query(deleteQuery, [id])
-// .then(() => console.log('Record deleted with then()'))
-// .catch(err => console.error('Error deleting record', err.stack));
-// }
-// deleteRecord(someID);
+//deleteTable();
