@@ -57,7 +57,7 @@ async function insertStoresFromJSON() {
 //insertStoresFromJSON();
 
 async function selectRecords() {
-  const selectQuery = "SELECT * FROM stores;";
+  const selectQuery = "SELECT * FROM stores ORDER BY id";
   try {
     const res = await client.query(selectQuery);
     return res.rows;

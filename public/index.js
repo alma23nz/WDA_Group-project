@@ -7,12 +7,12 @@ async function fetchStores() {
     console.log(stores);
 
     const container = document.getElementById("container");
-
     container.innerHTML = "";
 
     stores.forEach((store) => {
       // Create a div for each store
       const storeDiv = document.createElement("div");
+      storeDiv.dataset.id = store.id;
 
       // Create a UL
       const ul = document.createElement("ul");
@@ -27,7 +27,7 @@ async function fetchStores() {
       districtLi.textContent = `District: ${store.district}`;
       ul.appendChild(districtLi);
 
-      // URL as a clickable link
+      // URL
       let url = "#";
 
       if (store.url) {
@@ -43,28 +43,30 @@ async function fetchStores() {
       link.href = url;
       link.textContent = store.url;
       link.target = "_blank";
+
       urlLi.textContent = "URL: ";
       urlLi.appendChild(link);
       ul.appendChild(urlLi);
 
-      // ---------------- DELETE BUTTON ----------------
+      // ---------- DELETE BUTTON ----------
       const deleteBtn = document.createElement("button");
       deleteBtn.textContent = "Delete";
       deleteBtn.onclick = () => deleteStore(store.id);
 
-      // ---------------- UPDATE BUTTON ----------------
+      // ---------- UPDATE BUTTON ----------
       const updateBtn = document.createElement("button");
       updateBtn.textContent = "Update";
-      updateBtn.onclick = () =>
-        fillUpdateForm(store.id, store.name, store.url, store.district);
+      updateBtn.onclick = () => renderEditForm(store);
+      // Button container
+      const buttonDiv = document.createElement("div");
+      buttonDiv.appendChild(deleteBtn);
+      buttonDiv.appendChild(updateBtn);
 
-      storeDiv.appendChild(deleteBtn);
-      storeDiv.appendChild(updateBtn);
-
-      // Append UL to div
+      // Append elements in correct order
       storeDiv.appendChild(ul);
+      storeDiv.appendChild(buttonDiv);
 
-      // Append div to container
+      // Append store to container
       container.appendChild(storeDiv);
     });
   } catch (err) {
@@ -109,7 +111,6 @@ async function deleteStore(id) {
     });
 
     console.log("Store deleted");
-
     fetchStores();
   } catch (error) {
     console.error("Delete failed:", error);
@@ -117,35 +118,32 @@ async function deleteStore(id) {
 }
 
 // --------- FILL UPDATE FORM ---------
-function fillUpdateForm(id, name, url, district) {
-  document.getElementById("updateId").value = id;
-  document.getElementById("updateName").value = name;
-  document.getElementById("updateUrl").value = url;
-  document.getElementById("updateDistrict").value = district;
+function renderEditForm(store) {
+  const storeDiv = document.querySelector(`[data-id="${store.id}"]`);
+
+  storeDiv.innerHTML = `
+    <input id="editName" value="${store.name}" placeholder="Name">
+    <input id="editUrl" value="${store.url}" placeholder="URL">
+    <input id="editDistrict" value="${store.district}" placeholder="District">
+
+    <button onclick="saveEdit(${store.id})">Save</button>
+    <button onclick="fetchStores()">Cancel</button>
+  `;
 }
 
 // --------- UPDATE STORE ---------
-async function updateStore() {
-  const id = document.getElementById("updateId").value;
-
+async function saveEdit(id) {
   const updatedStore = {
-    name: document.getElementById("updateName").value,
-    url: document.getElementById("updateUrl").value,
-    district: document.getElementById("updateDistrict").value,
+    name: document.getElementById("editName").value,
+    url: document.getElementById("editUrl").value,
+    district: document.getElementById("editDistrict").value,
   };
 
   await fetch(`http://localhost:3000/api/stores/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(updatedStore),
   });
 
   fetchStores();
-
-  document.getElementById("updateId").value = "";
-  document.getElementById("updateName").value = "";
-  document.getElementById("updateUrl").value = "";
-  document.getElementById("updateDistrict").value = "";
 }
