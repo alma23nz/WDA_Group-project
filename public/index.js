@@ -1,9 +1,35 @@
 console.log("Hello, world!");
 let editingStoreId = null;
+let isLoggedIn = false;
 
+
+// Check if admin is logged in
+async function checkAuth() {
+  const res = await fetch("/check-auth", { credentials: "include" });
+  const data = await res.json();
+
+  isLoggedIn = data.loggedIn;
+
+  updateAuthButton();
+  updateUI();
+}
+
+function updateAuthButton() {
+  const authBtn = document.getElementById("authBtn");
+  authBtn.textContent = isLoggedIn ? "Logout" : "Login";
+  authBtn.onclick = isLoggedIn
+    ? logout
+    : () => window.location.href = "/login.html";
+}
+async function logout() {
+  await fetch("/logout", { credentials: "include" });
+  isLoggedIn = false;
+  updateAuthButton();
+  updateUI();
+}
 async function fetchStores() {
   try {
-    const response = await fetch("http://localhost:3000/api/stores");
+    const response = await fetch("/api/stores")
     const stores = await response.json();
    
     renderStores(stores);
@@ -11,6 +37,25 @@ async function fetchStores() {
   } catch (err) {
     console.error("Error fetching stores:", err);
   }
+}
+function updateUI() {
+  const storeContainer = document.getElementById("container");
+  const addForm = document.querySelector("form");
+
+  // Show Add Store form only if logged in
+  addForm.style.display = isLoggedIn ? "block" : "none";
+
+  // Update/Delete buttons for each store
+  const storeDivs = storeContainer.querySelectorAll("div[data-id]");
+  storeDivs.forEach(div => {
+    const buttons = div.querySelectorAll("button");
+    buttons.forEach(btn => {
+      // Only show Update/Delete buttons if logged in
+      if (btn.textContent === "Update" || btn.textContent === "Delete") {
+        btn.style.display = isLoggedIn ? "inline-block" : "none";
+      }
+    });
+  });
 }
 
 function renderStores(stores) {
@@ -81,6 +126,7 @@ function renderStores(stores) {
       // Append store to container
       container.appendChild(storeDiv);
     });
+      updateUI();
   } 
 
 document.getElementById("sortBtn").addEventListener("click", async () => {
@@ -97,27 +143,34 @@ document.getElementById("sortBtn").addEventListener("click", async () => {
   renderStores(stores);
 });
 
-fetchStores();
-
-
 // ------- CREATE STORE ---------
 async function createStore() {
   const nameField = document.getElementById("Addname");
   const urlField = document.getElementById("Addurl");
   const districtField = document.getElementById("Adddistrict");
+  
+  const name = nameField.value.trim();
+  const url = urlField.value.trim();
+  const district = districtField.value.trim();
+  
+  if (!name || !district || !url) {
+    alert("Please fill in all fields before adding a store.");
+    return;
+  }
 
   const newStore = {
-    name: nameField.value,
-    url: urlField.value,
-    district: districtField.value,
+    name: name,
+    url: url,
+    district: district,
   };
 
-  await fetch("http://localhost:3000/api/stores", {
+  await fetch("/api/stores", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(newStore),
+    credentials: "include" 
   });
 
   fetchStores();
@@ -171,6 +224,7 @@ async function saveEdit(id, storeDiv) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(updatedStore),
+    credentials: "include" 
   });
 
   editingStoreId = null;
@@ -188,6 +242,7 @@ async function deleteStore(id) {
   try {
     await fetch(`http://localhost:3000/api/stores/${id}`, {
       method: "DELETE",
+      credentials:"include"
     });
 
     console.log("Store deleted");
@@ -196,3 +251,6 @@ async function deleteStore(id) {
     console.error("Delete failed:", error);
   }
 }
+
+checkAuth();
+fetchStores();
