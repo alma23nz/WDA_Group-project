@@ -1,37 +1,38 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <link rel="stylesheet" href="index.css" />
+    <title>Project</title>
   </head>
   <body>
     <h2>Add Store</h2>
-        <form autocomplete="on">
-          <label for="Addname">Store name</label>
-          <input id="Addname" name="name" placeholder="Store name" />
+    <form autocomplete="on">
+      <label for="Addname">Store name</label>
+      <input id="Addname" name="name" placeholder="Store name" />
 
-          <label for="Adddistrict">District</label>
-          <input id="Adddistrict" name="district" placeholder="District" />
+      <label for="Adddistrict">District</label>
+      <input id="Adddistrict" name="district" placeholder="District" />
 
-          <label for="Addurl">URL</label>
-          <input id="Addurl" name="url" placeholder="URL" />
+      <label for="Addurl">URL</label>
+      <input id="Addurl" name="url" placeholder="URL" />
 
-          <button type="button" onclick="createStore()">Add Store</button>
-        </form>
+      <button type="button" onclick="createStore()">Add Store</button>
+    </form>
     <h2>Stores</h2>
     <h5>Sort Stores</h5>
-      <select id="sortField">
-        <option value="name">Name</option>
-        <option value="district">District</option>
-        <option value="url">URL</option>
-      </select>
+    <select id="sortField">
+      <option value="name">Name</option>
+      <option value="district">District</option>
+      <option value="url">URL</option>
+    </select>
 
-      <select id="sortOrder">
-        <option value="asc">Ascending</option>
-        <option value="desc">Descending</option>
-      </select>
-      <button id="sortBtn">Sort</button>
+    <select id="sortOrder">
+      <option value="asc">Ascending</option>
+      <option value="desc">Descending</option>
+    </select>
+    <button id="sortBtn">Sort</button>
     <div id="container"></div>
     <script src="./index.js"></script>
   </body>
