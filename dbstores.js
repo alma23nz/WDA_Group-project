@@ -1,4 +1,3 @@
-const fs = require("fs");
 const stores = require("./stores.json");
 
 const { Client } = require("pg");
