@@ -8,7 +8,7 @@ const storesDB = require("./dbstores");
 
 
 app.use(express.json());
-app.use(express.static("public"));
+app.use("/",express.static("public"));
 
 app.get("/", (req, res) => {
   res.send("welcom to the rest API");
