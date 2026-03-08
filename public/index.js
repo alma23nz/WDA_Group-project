@@ -31,9 +31,9 @@ async function fetchStores() {
   try {
     const response = await fetch("/api/stores")
     const stores = await response.json();
-   
+
     renderStores(stores);
-    return stores; 
+    return stores;
   } catch (err) {
     console.error("Error fetching stores:", err);
   }
@@ -59,75 +59,75 @@ function updateUI() {
 }
 
 function renderStores(stores) {
- 
-   
-    const container = document.getElementById("container");
-    container.innerHTML = "";
 
-    stores.forEach((store) => {
-      // Create a div for each store
-      const storeDiv = document.createElement("div");
-      storeDiv.dataset.id = store.id;
 
-      // Create a UL
-      const ul = document.createElement("ul");
+  const container = document.getElementById("container");
+  container.innerHTML = "";
 
-      // Name
-      const nameLi = document.createElement("li");
-      nameLi.textContent = `Name: ${store.name}`;
-      ul.appendChild(nameLi);
+  stores.forEach((store) => {
+    // Create a div for each store
+    const storeDiv = document.createElement("div");
+    storeDiv.dataset.id = store.id;
 
-      // District
-      const districtLi = document.createElement("li");
-      districtLi.textContent = `District: ${store.district}`;
-      ul.appendChild(districtLi);
+    // Create a UL
+    const ul = document.createElement("ul");
 
-      // URL
-      let url = "#";
+    // Name
+    const nameLi = document.createElement("li");
+    nameLi.textContent = `Name: ${store.name}`;
+    ul.appendChild(nameLi);
 
-      if (store.url) {
-        if (store.url.startsWith("http")) {
-          url = store.url;
-        } else {
-          url = "https://" + store.url;
-        }
+    // District
+    const districtLi = document.createElement("li");
+    districtLi.textContent = `District: ${store.district}`;
+    ul.appendChild(districtLi);
+
+    // URL
+    let url = "#";
+
+    if (store.url) {
+      if (store.url.startsWith("http")) {
+        url = store.url;
+      } else {
+        url = "https://" + store.url;
       }
+    }
 
-      const urlLi = document.createElement("li");
-      const link = document.createElement("a");
-      link.href = url;
-      link.textContent = store.url;
-      link.target = "_blank";
+    const urlLi = document.createElement("li");
+    const link = document.createElement("a");
+    link.href = url;
+    link.textContent = url;
+    link.target = "_blank";
 
-      urlLi.textContent = "URL: ";
-      urlLi.appendChild(link);
-      ul.appendChild(urlLi);
-       // ---------- UPDATE BUTTON ----------
-      const updateBtn = document.createElement("button");
-      updateBtn.textContent = "Update";
-      updateBtn.onclick = () => renderEditForm(store);
+    urlLi.textContent = "URL: ";
+    urlLi.appendChild(link);
+    ul.appendChild(urlLi);
+    // ---------- UPDATE BUTTON ----------
+    const updateBtn = document.createElement("button");
+    updateBtn.textContent = "Update";
+    updateBtn.onclick = () => renderEditForm(store);
 
-      // ---------- DELETE BUTTON ----------
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "Delete";
-      deleteBtn.onclick = () => deleteStore(store.id);
+    // ---------- DELETE BUTTON ----------
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete";
+    deleteBtn.onclick = () => deleteStore(store.id);
 
-     
-      // Button container
-      const buttonDiv = document.createElement("div");
-      buttonDiv.appendChild(updateBtn);
-      buttonDiv.appendChild(deleteBtn);
-      
 
-      // Append elements in correct order
-      storeDiv.appendChild(ul);
-      storeDiv.appendChild(buttonDiv);
+    // Button container
+    const buttonDiv = document.createElement("div");
+    buttonDiv.appendChild(updateBtn);
+    buttonDiv.appendChild(deleteBtn);
 
-      // Append store to container
-      container.appendChild(storeDiv);
-    });
-      updateUI();
-  } 
+
+    // Append elements in correct order
+    storeDiv.appendChild(ul);
+    storeDiv.appendChild(buttonDiv);
+
+    // Append store to container
+    container.appendChild(storeDiv);
+  });
+  updateUI();
+}
 
 document.getElementById("sortBtn").addEventListener("click", async () => {
 
@@ -148,11 +148,11 @@ async function createStore() {
   const nameField = document.getElementById("Addname");
   const urlField = document.getElementById("Addurl");
   const districtField = document.getElementById("Adddistrict");
-  
+
   const name = nameField.value.trim();
   const url = urlField.value.trim();
   const district = districtField.value.trim();
-  
+
   if (!name || !district || !url) {
     alert("Please fill in all fields before adding a store.");
     return;
@@ -170,7 +170,7 @@ async function createStore() {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(newStore),
-    credentials: "include" 
+    credentials: "include"
   });
 
   fetchStores();
@@ -224,7 +224,7 @@ async function saveEdit(id, storeDiv) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(updatedStore),
-    credentials: "include" 
+    credentials: "include"
   });
 
   editingStoreId = null;
@@ -242,7 +242,7 @@ async function deleteStore(id) {
   try {
     await fetch(`http://localhost:3000/api/stores/${id}`, {
       method: "DELETE",
-      credentials:"include"
+      credentials: "include"
     });
 
     console.log("Store deleted");

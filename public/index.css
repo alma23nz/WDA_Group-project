@@ -28,10 +28,12 @@ form {
   border-radius: 6px;
   font-size: 16px;
 }
+
 label {
   margin-right: 4px;
   font-weight: bold;
 }
+
 input {
   margin-right: 20px;
   padding: 6px;
@@ -71,4 +73,5 @@ ul {
   font-size: 20px;
   margin-top: 25px;
   padding: 20px;
+  list-style: none;
 }
