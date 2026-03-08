@@ -1,10 +1,8 @@
 const express = require("express");
 const app = express();
 const PORT = 3000;
-const sqlite3 = require("sqlite3");
 const cors = require("cors");
 
-const stores = require("./stores.json");
 const storesDB = require("./dbstores");
 
 app.use(express.json());
@@ -15,94 +13,85 @@ app.get("/", (req, res) => {
 });
 
 // Get all stores
-app.get("/stores", async (req, res) => {
+app.get("/api/stores", async (req, res) => {
   try {
-    const stores = await storesDB.selectRecords();
+    const { sort, order } = req.query;
+
+    let stores = await storesDB.selectRecords();
+
+    if (sort) {
+      stores.sort((a, b) => {
+        const valA = (a[sort] ?? "").toLowerCase();
+        const valB = (b[sort] ?? "").toLowerCase();
+
+        if (valA < valB) return order === "desc" ? 1 : -1;
+        if (valA > valB) return order === "desc" ? -1 : 1;
+        return 0;
+      });
+    }
+
     res.json(stores);
+
   } catch (err) {
     console.error("Error fetching stores:", err);
     res.status(500).json({ error: "Failed to fetch stores" });
   }
 });
+// POST -----------------------------------------------
+app.post("/api/stores", async (req, res) => {
+  const newStore = req.body;
 
-app.get("/api/stores/:id", (req, res) => {
-  let storesID = parseInt(req.params.id);
-  let store = stores.find((p) => p.id === storesID);
+  try {
+    const createdStore = await storesDB.createStore(
+      newStore.name,
+      newStore.url,
+      newStore.district,
+    );
 
-  if (store) {
-    res.json(store);
-  } else {
-    res.status(404).json({ message: "store not found" });
-  }
-});
-
-app.post("/api/stores", (req, res) => {
-  const { name, url, district } = req.body;
-
-  if (!name || !url || !district) {
-    return res.status(400).json({
-      message: "Name and price are required!",
+    res.json({
+      message: "POST - created a new store",
+      data: createdStore,
     });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create store" });
   }
-
-  const newStore = {
-    id: stores.length + 1,
-    name,
-    url,
-    district,
-  };
-
-  stores.push(newStore);
-
-  res.json({
-    message: "POST - created a new item",
-    data: newStore,
-  });
 });
-app.put("/api/stores/:id", (req, res) => {
-  const storesID = parseInt(req.params.id);
+
+// PUT -----------------------------------------------
+app.put("/api/stores/:id", async (req, res) => {
+  const id = req.params.id;
   const updatedData = req.body;
 
-  const store = stores.find((s) => s.id === storesID);
+  try {
+    const updatedStore = await storesDB.updateStore(
+      id,
+      updatedData.name,
+      updatedData.url,
+      updatedData.district,
+    );
 
-  if (!store) {
-    return res.status(404).json({
-      message: "store not found",
+    res.json({
+      message: `PUT - updated store with ID ${id}`,
+      data: updatedStore,
     });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update store" });
   }
-
-  if (updatedData.name !== undefined) {
-    store.name = updatedData.name;
-  }
-
-  if (updatedData.url !== undefined) {
-    store.url = updatedData.url;
-  }
-  if (updatedData.district !== undefined) {
-    store.district = updatedData.district;
-  }
-
-  res.json({
-    message: `PUT - Updated item with ID ${storesID}`,
-    data: store,
-  });
 });
 
-app.delete("/api/stores/:id", (req, res) => {
-  const storesID = parseInt(req.params.id);
+// DELETE -----------------------------------------------
+app.delete("/api/stores/:id", async (req, res) => {
+  const id = req.params.id;
 
-  const index = stores.findIndex((s) => s.id === storesID);
+  try {
+    await storesDB.deleteStore(id);
 
-  if (index === -1) {
-    return res.status(404).json({ error: "store not found." });
+    res.json({
+      message: `DELETE - removed store with ID ${id}`,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete store" });
   }
-
-  const deletedStore = store.splice(index, 1)[0];
-
-  res.json({
-    message: "store deleted successfully!",
-    product: deletedStore,
-  });
 });
 
 app.listen(PORT, () => {
