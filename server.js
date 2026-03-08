@@ -13,16 +13,30 @@ app.get("/", (req, res) => {
 });
 
 // Get all stores
-app.get("/stores", async (req, res) => {
+app.get("/api/stores", async (req, res) => {
   try {
-    const stores = await storesDB.selectRecords();
+    const { sort, order } = req.query;
+
+    let stores = await storesDB.selectRecords();
+
+    if (sort) {
+      stores.sort((a, b) => {
+        const valA = (a[sort] ?? "").toLowerCase();
+        const valB = (b[sort] ?? "").toLowerCase();
+
+        if (valA < valB) return order === "desc" ? 1 : -1;
+        if (valA > valB) return order === "desc" ? -1 : 1;
+        return 0;
+      });
+    }
+
     res.json(stores);
+
   } catch (err) {
     console.error("Error fetching stores:", err);
     res.status(500).json({ error: "Failed to fetch stores" });
   }
 });
-
 // POST -----------------------------------------------
 app.post("/api/stores", async (req, res) => {
   const newStore = req.body;

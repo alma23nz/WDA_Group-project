@@ -1,11 +1,21 @@
 console.log("Hello, world!");
+let editingStoreId = null;
 
 async function fetchStores() {
   try {
-    const response = await fetch("http://localhost:3000/stores");
+    const response = await fetch("http://localhost:3000/api/stores");
     const stores = await response.json();
-    console.log(stores);
+   
+    renderStores(stores);
+    return stores; 
+  } catch (err) {
+    console.error("Error fetching stores:", err);
+  }
+}
 
+function renderStores(stores) {
+ 
+   
     const container = document.getElementById("container");
     container.innerHTML = "";
 
@@ -47,20 +57,22 @@ async function fetchStores() {
       urlLi.textContent = "URL: ";
       urlLi.appendChild(link);
       ul.appendChild(urlLi);
+       // ---------- UPDATE BUTTON ----------
+      const updateBtn = document.createElement("button");
+      updateBtn.textContent = "Update";
+      updateBtn.onclick = () => renderEditForm(store);
 
       // ---------- DELETE BUTTON ----------
       const deleteBtn = document.createElement("button");
       deleteBtn.textContent = "Delete";
       deleteBtn.onclick = () => deleteStore(store.id);
 
-      // ---------- UPDATE BUTTON ----------
-      const updateBtn = document.createElement("button");
-      updateBtn.textContent = "Update";
-      updateBtn.onclick = () => renderEditForm(store);
+     
       // Button container
       const buttonDiv = document.createElement("div");
-      buttonDiv.appendChild(deleteBtn);
       buttonDiv.appendChild(updateBtn);
+      buttonDiv.appendChild(deleteBtn);
+      
 
       // Append elements in correct order
       storeDiv.appendChild(ul);
@@ -69,18 +81,30 @@ async function fetchStores() {
       // Append store to container
       container.appendChild(storeDiv);
     });
-  } catch (err) {
-    console.error("Error fetching stores:", err);
-  }
-}
+  } 
+
+document.getElementById("sortBtn").addEventListener("click", async () => {
+
+  const field = document.getElementById("sortField").value;
+  const order = document.getElementById("sortOrder").value;
+
+  const response = await fetch(
+    `http://localhost:3000/api/stores?sort=${field}&order=${order}`
+  );
+
+  const stores = await response.json();
+
+  renderStores(stores);
+});
 
 fetchStores();
 
+
 // ------- CREATE STORE ---------
 async function createStore() {
-  const nameField = document.getElementById("name");
-  const urlField = document.getElementById("url");
-  const districtField = document.getElementById("district");
+  const nameField = document.getElementById("Addname");
+  const urlField = document.getElementById("Addurl");
+  const districtField = document.getElementById("Adddistrict");
 
   const newStore = {
     name: nameField.value,
@@ -103,6 +127,62 @@ async function createStore() {
   districtField.value = "";
 }
 
+
+// --------- update EDIT FORM ---------
+
+function renderEditForm(store) {
+
+  // Prevent multiple edit forms
+  if (editingStoreId !== null) {
+    alert("Finish editing the current store first.");
+    return;
+  }
+
+  editingStoreId = store.id;
+
+  const storeDiv = document.querySelector(`[data-id="${store.id}"]`);
+
+  storeDiv.innerHTML = `
+    <input class="editName" value="${store.name}" placeholder="Name">
+    <input class="editDistrict" value="${store.district}" placeholder="District">
+    <input class="editUrl" value="${store.url}" placeholder="URL">
+
+    <button class="saveBtn">Save</button>
+    <button class="cancelBtn">Cancel</button>
+  `;
+
+  storeDiv.querySelector(".saveBtn").onclick = () => saveEdit(store.id, storeDiv);
+  storeDiv.querySelector(".cancelBtn").onclick = cancelEdit;
+}
+
+// --------- UPDATE STORE ---------
+
+async function saveEdit(id, storeDiv) {
+
+  const updatedStore = {
+    name: storeDiv.querySelector(".editName").value,
+    district: storeDiv.querySelector(".editDistrict").value,
+    url: storeDiv.querySelector(".editUrl").value,
+  };
+
+  await fetch(`http://localhost:3000/api/stores/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updatedStore),
+  });
+
+  editingStoreId = null;
+  fetchStores();
+}
+
+function cancelEdit() {
+  editingStoreId = null;
+  fetchStores();
+}
+
+
 // -------- DELETE STORE ---------
 async function deleteStore(id) {
   try {
@@ -115,35 +195,4 @@ async function deleteStore(id) {
   } catch (error) {
     console.error("Delete failed:", error);
   }
-}
-
-// --------- FILL UPDATE FORM ---------
-function renderEditForm(store) {
-  const storeDiv = document.querySelector(`[data-id="${store.id}"]`);
-
-  storeDiv.innerHTML = `
-    <input id="editName" value="${store.name}" placeholder="Name">
-    <input id="editUrl" value="${store.url}" placeholder="URL">
-    <input id="editDistrict" value="${store.district}" placeholder="District">
-
-    <button onclick="saveEdit(${store.id})">Save</button>
-    <button onclick="fetchStores()">Cancel</button>
-  `;
-}
-
-// --------- UPDATE STORE ---------
-async function saveEdit(id) {
-  const updatedStore = {
-    name: document.getElementById("editName").value,
-    url: document.getElementById("editUrl").value,
-    district: document.getElementById("editDistrict").value,
-  };
-
-  await fetch(`http://localhost:3000/api/stores/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(updatedStore),
-  });
-
-  fetchStores();
 }
