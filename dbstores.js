@@ -1,4 +1,3 @@
-const fs = require("fs");
 const stores = require("./stores.json");
 
 const { Client } = require("pg");
@@ -21,6 +20,10 @@ async function connectDB() {
 }
 connectDB();
 
+// --------------
+// createTable
+// --------------
+
 async function createTable() {
   const createTableQuery = `
     CREATE TABLE IF NOT EXISTS stores (
@@ -40,6 +43,10 @@ async function createTable() {
 }
 //createTable();
 
+// --------------
+// insert the json 
+// --------------
+
 async function insertStoresFromJSON() {
   try {
     for (const store of stores) {
@@ -56,6 +63,10 @@ async function insertStoresFromJSON() {
 }
 //insertStoresFromJSON();
 
+// --------------
+// Select from stores 
+// --------------
+
 async function selectRecords() {
   const selectQuery = "SELECT * FROM stores ORDER BY id";
   try {
@@ -68,7 +79,9 @@ async function selectRecords() {
 }
 selectRecords();
 
+// --------------
 // Create a new store
+// --------------
 async function createStore(name, url, district) {
   const query = `
     INSERT INTO stores (name, url, district)
@@ -85,7 +98,10 @@ async function createStore(name, url, district) {
   }
 }
 
+// --------------
 // Update a store
+// --------------
+
 async function updateStore(id, name, url, district) {
   const query = `
     UPDATE stores
@@ -103,7 +119,9 @@ async function updateStore(id, name, url, district) {
   }
 }
 
+// --------------
 // Delete a store
+// --------------
 async function deleteStore(id) {
   const query = `
     DELETE FROM stores
@@ -118,7 +136,10 @@ async function deleteStore(id) {
   }
 }
 
+// --------------
 // Export functions for the server
+// --------------
+
 module.exports = {
   selectRecords,
   createStore,
@@ -131,6 +152,10 @@ async function getStoreByID(id) {
   return result.rows[0] || null;
 }
 //getStoreByID()
+
+// --------------
+// Delete Table
+// --------------
 
 async function deleteTable() {
   try {
