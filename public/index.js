@@ -127,9 +127,9 @@ function renderStores(stores) {
     urlLi.appendChild(link);
     ul.appendChild(urlLi);
 
-    // District
+    // Category
     const categoryLi = document.createElement("li");
-    categoryLi.textContent = `District: ${store.category}`;
+    categoryLi.textContent = `Category: ${store.category}`;
     ul.appendChild(categoryLi);
 
     // ---------- UPDATE BUTTON ----------

@@ -3,7 +3,7 @@ const stores = require("./stores.json");
 const { Client } = require("pg");
 
 const client = new Client({
-  host: "localhost",
+  host: "host.docker.internal",
   port: 5432,
   user: "postgres",
   password: "12345",
@@ -73,7 +73,6 @@ async function selectRecords() {
   try {
     const res = await client.query(selectQuery);
     return res.rows;
-    console.log("All stores:", res.rows);
   } catch (err) {
     console.error("Error selecting records", err.stack);
   }
@@ -83,7 +82,7 @@ selectRecords();
 // --------------
 // Create a new store
 // --------------
-async function createStore(name, url, district) {
+async function createStore(name, url, district, category) {
   const query = `
     INSERT INTO stores (name, url, district, category)
     VALUES ($1, $2, $3, $4)
