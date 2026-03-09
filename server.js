@@ -2,8 +2,8 @@ const express = require("express");
 const app = express();
 const PORT = 3000;
 const cors = require("cors");
-const cookieParser=  require("cookie-parser")
-const crypto = require("crypto")
+const cookieParser = require("cookie-parser");
+const crypto = require("crypto");
 const storesDB = require("./dbstores");
 
 // --------------
@@ -11,22 +11,22 @@ const storesDB = require("./dbstores");
 // --------------
 
 app.use(express.json());
-app.use("/",express.static("public"));
+app.use("/", express.static("public"));
 
 app.get("/", (req, res) => {
   res.send("welcom to the rest API");
 });
 
 // --------------
-// Admin 
+// Admin
 // --------------
 
-const SECRET = 'mySecretCookieToken'; 
+const SECRET = "mySecretCookieToken";
 app.use(cookieParser(SECRET));
 const ADMIN_USERNAME = "Group6";
 const ADMIN_PASSWORD = "12345";
 
-const sessions={}
+const sessions = {};
 function requireAuth(req, res, next) {
   const token = req.cookies.authToken;
 
@@ -53,17 +53,15 @@ app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
   if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-
     const token = crypto.randomBytes(32).toString("hex");
 
     sessions[token] = { username };
 
     res.cookie("authToken", token, {
-      httpOnly: true
+      httpOnly: true,
     });
 
     res.json({ message: "Login successful" });
-
   } else {
     res.status(401).json({ error: "Invalid login" });
   }
@@ -104,7 +102,6 @@ app.get("/api/stores", async (req, res) => {
     }
 
     res.json(stores);
-
   } catch (err) {
     console.error("Error fetching stores:", err);
     res.status(500).json({ error: "Failed to fetch stores" });
@@ -112,7 +109,7 @@ app.get("/api/stores", async (req, res) => {
 });
 
 // --------------
-// POST 
+// POST
 // --------------
 
 app.post("/api/stores", requireAuth, async (req, res) => {
@@ -123,6 +120,7 @@ app.post("/api/stores", requireAuth, async (req, res) => {
       newStore.name,
       newStore.url,
       newStore.district,
+      newStore.category,
     );
 
     res.json({
@@ -135,7 +133,7 @@ app.post("/api/stores", requireAuth, async (req, res) => {
 });
 
 // --------------
-// PUT 
+// PUT
 // --------------
 
 app.put("/api/stores/:id", requireAuth, async (req, res) => {
@@ -148,6 +146,7 @@ app.put("/api/stores/:id", requireAuth, async (req, res) => {
       updatedData.name,
       updatedData.url,
       updatedData.district,
+      updatedData.category,
     );
 
     res.json({
@@ -160,7 +159,7 @@ app.put("/api/stores/:id", requireAuth, async (req, res) => {
 });
 
 // --------------
-// DELETE 
+// DELETE
 // --------------
 
 app.delete("/api/stores/:id", requireAuth, async (req, res) => {

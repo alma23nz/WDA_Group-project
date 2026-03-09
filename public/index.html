@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,19 +7,22 @@
     <title>Project</title>
   </head>
   <body>
-     <button id="authBtn">Login</button>
+    <button id="authBtn">Login</button>
 
     <h2>Stores</h2>
-  
-        <form autocomplete="on">
-          <label for="Addname">Store name</label>
-          <input id="Addname" name="name" placeholder="Store name" />
+
+    <form autocomplete="on">
+      <label for="Addname">Store name</label>
+      <input id="Addname" name="name" placeholder="Store name" />
 
       <label for="Adddistrict">District</label>
       <input id="Adddistrict" name="district" placeholder="District" />
 
       <label for="Addurl">URL</label>
       <input id="Addurl" name="url" placeholder="URL" />
+
+      <label for="Addcategory">Category</label>
+      <input id="Addcategory" name="category" placeholder="Category" />
 
       <button type="button" onclick="createStore()">Add Store</button>
     </form>
@@ -29,6 +32,7 @@
       <option value="name">Name</option>
       <option value="district">District</option>
       <option value="url">URL</option>
+      <option value="category">Category</option>
     </select>
 
     <select id="sortOrder">

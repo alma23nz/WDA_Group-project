@@ -25,7 +25,7 @@ function updateAuthButton() {
   authBtn.textContent = isLoggedIn ? "Logout" : "Login";
   authBtn.onclick = isLoggedIn
     ? logout
-    : () => window.location.href = "/login.html";
+    : () => (window.location.href = "/login.html");
 }
 // --------------
 // logout
@@ -43,7 +43,7 @@ async function logout() {
 
 async function fetchStores() {
   try {
-    const response = await fetch("/api/stores")
+    const response = await fetch("/api/stores");
     const stores = await response.json();
 
     renderStores(stores);
@@ -68,9 +68,9 @@ function updateUI() {
   // Update/Delete buttons for each store
   // --------------
   const storeDivs = storeContainer.querySelectorAll("div[data-id]");
-  storeDivs.forEach(div => {
+  storeDivs.forEach((div) => {
     const buttons = div.querySelectorAll("button");
-    buttons.forEach(btn => {
+    buttons.forEach((btn) => {
       // --------------
       // Only show Update/Delete buttons if logged in
       // --------------
@@ -85,8 +85,6 @@ function updateUI() {
 // oragnize and add stores to the page
 // --------------
 function renderStores(stores) {
-
-
   const container = document.getElementById("container");
   container.innerHTML = "";
 
@@ -128,6 +126,12 @@ function renderStores(stores) {
     urlLi.textContent = "URL: ";
     urlLi.appendChild(link);
     ul.appendChild(urlLi);
+
+    // District
+    const categoryLi = document.createElement("li");
+    categoryLi.textContent = `District: ${store.category}`;
+    ul.appendChild(categoryLi);
+
     // ---------- UPDATE BUTTON ----------
     const updateBtn = document.createElement("button");
     updateBtn.textContent = "Update";
@@ -138,12 +142,10 @@ function renderStores(stores) {
     deleteBtn.textContent = "Delete";
     deleteBtn.onclick = () => deleteStore(store.id);
 
-
     // Button container
     const buttonDiv = document.createElement("div");
     buttonDiv.appendChild(updateBtn);
     buttonDiv.appendChild(deleteBtn);
-
 
     // Append elements in correct order
     storeDiv.appendChild(ul);
@@ -158,12 +160,11 @@ function renderStores(stores) {
 // sort the list of stores
 // --------------
 document.getElementById("sortBtn").addEventListener("click", async () => {
-
   const field = document.getElementById("sortField").value;
   const order = document.getElementById("sortOrder").value;
 
   const response = await fetch(
-    `http://localhost:3000/api/stores?sort=${field}&order=${order}`
+    `http://localhost:3000/api/stores?sort=${field}&order=${order}`,
   );
 
   const stores = await response.json();
@@ -172,19 +173,21 @@ document.getElementById("sortBtn").addEventListener("click", async () => {
 });
 
 // --------------
-// CREATE STORE 
+// CREATE STORE
 // --------------
 
 async function createStore() {
   const nameField = document.getElementById("Addname");
   const urlField = document.getElementById("Addurl");
   const districtField = document.getElementById("Adddistrict");
+  const categoryField = document.getElementById("Addcategory");
 
   const name = nameField.value.trim();
   const url = urlField.value.trim();
   const district = districtField.value.trim();
+  const category = categoryField.value.trim();
 
-  if (!name || !district || !url) {
+  if (!name || !district || !url || !category) {
     alert("Please fill in all fields before adding a store.");
     return;
   }
@@ -193,6 +196,7 @@ async function createStore() {
     name: name,
     url: url,
     district: district,
+    category: category,
   };
 
   await fetch("/api/stores", {
@@ -201,7 +205,7 @@ async function createStore() {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(newStore),
-    credentials: "include"
+    credentials: "include",
   });
 
   fetchStores();
@@ -209,6 +213,7 @@ async function createStore() {
   nameField.value = "";
   urlField.value = "";
   districtField.value = "";
+  categoryField.value = "";
 }
 
 // --------------
@@ -216,7 +221,6 @@ async function createStore() {
 // --------------
 
 function renderEditForm(store) {
-
   if (editingStoreId !== null) {
     alert("Finish editing the current store first.");
     return;
@@ -230,24 +234,26 @@ function renderEditForm(store) {
     <input class="editName" value="${store.name}" placeholder="Name">
     <input class="editDistrict" value="${store.district}" placeholder="District">
     <input class="editUrl" value="${store.url}" placeholder="URL">
+    <input class="editCategory" value="${store.category}" placeholder="Category">
 
     <button class="saveBtn">Save</button>
     <button class="cancelBtn">Cancel</button>
   `;
 
-  storeDiv.querySelector(".saveBtn").onclick = () => saveEdit(store.id, storeDiv);
+  storeDiv.querySelector(".saveBtn").onclick = () =>
+    saveEdit(store.id, storeDiv);
   storeDiv.querySelector(".cancelBtn").onclick = cancelEdit;
 }
 // --------------
-// UPDATE STORE 
+// UPDATE STORE
 // --------------
 
 async function saveEdit(id, storeDiv) {
-
   const updatedStore = {
     name: storeDiv.querySelector(".editName").value,
     district: storeDiv.querySelector(".editDistrict").value,
     url: storeDiv.querySelector(".editUrl").value,
+    category: storeDiv.querySelector(".editCategory").value,
   };
 
   await fetch(`http://localhost:3000/api/stores/${id}`, {
@@ -256,7 +262,7 @@ async function saveEdit(id, storeDiv) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(updatedStore),
-    credentials: "include"
+    credentials: "include",
   });
 
   editingStoreId = null;
@@ -269,13 +275,13 @@ function cancelEdit() {
 }
 
 // --------------
-// DELETE STORE 
+// DELETE STORE
 // --------------
 async function deleteStore(id) {
   try {
     await fetch(`http://localhost:3000/api/stores/${id}`, {
       method: "DELETE",
-      credentials: "include"
+      credentials: "include",
     });
 
     console.log("Store deleted");

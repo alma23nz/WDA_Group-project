@@ -30,7 +30,8 @@ async function createTable() {
       id SERIAL PRIMARY KEY,
       name VARCHAR(500),
       url VARCHAR(1000),
-      district VARCHAR(50)
+      district VARCHAR(50),
+      category VARCHAR(50)
     );
   `;
 
@@ -44,15 +45,15 @@ async function createTable() {
 //createTable();
 
 // --------------
-// insert the json 
+// insert the json
 // --------------
 
 async function insertStoresFromJSON() {
   try {
     for (const store of stores) {
       await client.query(
-        "INSERT INTO stores (name, url, district) VALUES ($1, $2, $3)",
-        [store.name, store.url, store.district],
+        "INSERT INTO stores (name, url, district, category) VALUES ($1, $2, $3, $4)",
+        [store.name, store.url, store.district, store.Category],
       );
     }
 
@@ -64,7 +65,7 @@ async function insertStoresFromJSON() {
 //insertStoresFromJSON();
 
 // --------------
-// Select from stores 
+// Select from stores
 // --------------
 
 async function selectRecords() {
@@ -84,13 +85,13 @@ selectRecords();
 // --------------
 async function createStore(name, url, district) {
   const query = `
-    INSERT INTO stores (name, url, district)
-    VALUES ($1, $2, $3)
+    INSERT INTO stores (name, url, district, category)
+    VALUES ($1, $2, $3, $4)
     RETURNING *;
   `;
 
   try {
-    const res = await client.query(query, [name, url, district]);
+    const res = await client.query(query, [name, url, district, category]);
     return res.rows[0];
   } catch (err) {
     console.error("Error creating store:", err);
@@ -102,16 +103,16 @@ async function createStore(name, url, district) {
 // Update a store
 // --------------
 
-async function updateStore(id, name, url, district) {
+async function updateStore(id, name, url, district, category) {
   const query = `
     UPDATE stores
-    SET name=$1, url=$2, district=$3
-    WHERE id=$4
+    SET name=$1, url=$2, district=$3, category=$4
+    WHERE id=$5
     RETURNING *;
   `;
 
   try {
-    const res = await client.query(query, [name, url, district, id]);
+    const res = await client.query(query, [name, url, district, category, id]);
     return res.rows[0];
   } catch (err) {
     console.error("Error updating store:", err);
