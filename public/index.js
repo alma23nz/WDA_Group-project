@@ -2,8 +2,10 @@ console.log("Hello, world!");
 let editingStoreId = null;
 let isLoggedIn = false;
 
-
+// --------------
 // Check if admin is logged in
+// --------------
+
 async function checkAuth() {
   const res = await fetch("/check-auth", { credentials: "include" });
   const data = await res.json();
@@ -14,6 +16,10 @@ async function checkAuth() {
   updateUI();
 }
 
+// --------------
+// update button so that it shows if the user is logged in or not
+// --------------
+
 function updateAuthButton() {
   const authBtn = document.getElementById("authBtn");
   authBtn.textContent = isLoggedIn ? "Logout" : "Login";
@@ -21,12 +27,20 @@ function updateAuthButton() {
     ? logout
     : () => window.location.href = "/login.html";
 }
+// --------------
+// logout
+// --------------
 async function logout() {
   await fetch("/logout", { credentials: "include" });
   isLoggedIn = false;
   updateAuthButton();
   updateUI();
 }
+
+// --------------
+// Fetch stores from api/stores
+// --------------
+
 async function fetchStores() {
   try {
     const response = await fetch("/api/stores")
@@ -38,19 +52,28 @@ async function fetchStores() {
     console.error("Error fetching stores:", err);
   }
 }
+
+// --------------
+// UI when the stores are on the pagess when users are loggedin or not
+// --------------
+
 function updateUI() {
   const storeContainer = document.getElementById("container");
   const addForm = document.querySelector("form");
-
+  // --------------
   // Show Add Store form only if logged in
+  // --------------
   addForm.style.display = isLoggedIn ? "block" : "none";
-
+  // --------------
   // Update/Delete buttons for each store
+  // --------------
   const storeDivs = storeContainer.querySelectorAll("div[data-id]");
   storeDivs.forEach(div => {
     const buttons = div.querySelectorAll("button");
     buttons.forEach(btn => {
+      // --------------
       // Only show Update/Delete buttons if logged in
+      // --------------
       if (btn.textContent === "Update" || btn.textContent === "Delete") {
         btn.style.display = isLoggedIn ? "inline-block" : "none";
       }
@@ -58,6 +81,9 @@ function updateUI() {
   });
 }
 
+// --------------
+// oragnize and add stores to the page
+// --------------
 function renderStores(stores) {
 
 
@@ -128,7 +154,9 @@ function renderStores(stores) {
   });
   updateUI();
 }
-
+// --------------
+// sort the list of stores
+// --------------
 document.getElementById("sortBtn").addEventListener("click", async () => {
 
   const field = document.getElementById("sortField").value;
@@ -143,7 +171,10 @@ document.getElementById("sortBtn").addEventListener("click", async () => {
   renderStores(stores);
 });
 
-// ------- CREATE STORE ---------
+// --------------
+// CREATE STORE 
+// --------------
+
 async function createStore() {
   const nameField = document.getElementById("Addname");
   const urlField = document.getElementById("Addurl");
@@ -180,12 +211,12 @@ async function createStore() {
   districtField.value = "";
 }
 
-
-// --------- update EDIT FORM ---------
+// --------------
+//update EDIT FORM
+// --------------
 
 function renderEditForm(store) {
 
-  // Prevent multiple edit forms
   if (editingStoreId !== null) {
     alert("Finish editing the current store first.");
     return;
@@ -207,8 +238,9 @@ function renderEditForm(store) {
   storeDiv.querySelector(".saveBtn").onclick = () => saveEdit(store.id, storeDiv);
   storeDiv.querySelector(".cancelBtn").onclick = cancelEdit;
 }
-
-// --------- UPDATE STORE ---------
+// --------------
+// UPDATE STORE 
+// --------------
 
 async function saveEdit(id, storeDiv) {
 
@@ -236,8 +268,9 @@ function cancelEdit() {
   fetchStores();
 }
 
-
-// -------- DELETE STORE ---------
+// --------------
+// DELETE STORE 
+// --------------
 async function deleteStore(id) {
   try {
     await fetch(`http://localhost:3000/api/stores/${id}`, {
@@ -252,5 +285,8 @@ async function deleteStore(id) {
   }
 }
 
+// --------------
+// Calling the funcations
+// --------------
 checkAuth();
 fetchStores();

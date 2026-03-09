@@ -1,3 +1,7 @@
+// --------------
+// login
+// --------------
+
 document.getElementById("loginBtn").onclick = async () => {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
@@ -6,15 +10,14 @@ document.getElementById("loginBtn").onclick = async () => {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password }),
-    credentials: "include"   // important to store the cookie
+    credentials: "include"  
   });
 
   const data = await res.json();
 
   if (res.ok) {
-    // redirect to index.html (stores page) after successful login
     window.location.href = "/index.html";
   } else {
-    alert(data.error); // invalid credentials
+    alert(data.error);
   }
 };

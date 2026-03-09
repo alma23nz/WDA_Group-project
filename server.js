@@ -6,6 +6,9 @@ const cookieParser=  require("cookie-parser")
 const crypto = require("crypto")
 const storesDB = require("./dbstores");
 
+// --------------
+// middleware used before requests
+// --------------
 
 app.use(express.json());
 app.use("/",express.static("public"));
@@ -13,7 +16,11 @@ app.use("/",express.static("public"));
 app.get("/", (req, res) => {
   res.send("welcom to the rest API");
 });
+
+// --------------
 // Admin 
+// --------------
+
 const SECRET = 'mySecretCookieToken'; 
 app.use(cookieParser(SECRET));
 const ADMIN_USERNAME = "Group6";
@@ -24,7 +31,7 @@ function requireAuth(req, res, next) {
   const token = req.cookies.authToken;
 
   if (token && sessions[token]) {
-    next(); // user is authenticated
+    next();
   } else {
     res.status(403).json({ error: "Not authorized" });
   }
@@ -37,6 +44,10 @@ app.get("/check-auth", (req, res) => {
     res.json({ loggedIn: false });
   }
 });
+
+// --------------
+// login
+// --------------
 
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
@@ -57,6 +68,10 @@ app.post("/login", (req, res) => {
     res.status(401).json({ error: "Invalid login" });
   }
 });
+
+// --------------
+// logout
+// --------------
 app.get("/logout", (req, res) => {
   const token = req.cookies.authToken;
 
@@ -68,7 +83,9 @@ app.get("/logout", (req, res) => {
   res.json({ message: "Logged out" });
 });
 
+// --------------
 // Get all stores
+// --------------
 app.get("/api/stores", async (req, res) => {
   try {
     const { sort, order } = req.query;
@@ -94,7 +111,10 @@ app.get("/api/stores", async (req, res) => {
   }
 });
 
-// POST -----------------------------------------------
+// --------------
+// POST 
+// --------------
+
 app.post("/api/stores", requireAuth, async (req, res) => {
   const newStore = req.body;
 
@@ -114,7 +134,10 @@ app.post("/api/stores", requireAuth, async (req, res) => {
   }
 });
 
-// PUT -----------------------------------------------
+// --------------
+// PUT 
+// --------------
+
 app.put("/api/stores/:id", requireAuth, async (req, res) => {
   const id = req.params.id;
   const updatedData = req.body;
@@ -136,7 +159,10 @@ app.put("/api/stores/:id", requireAuth, async (req, res) => {
   }
 });
 
-// DELETE -----------------------------------------------
+// --------------
+// DELETE 
+// --------------
+
 app.delete("/api/stores/:id", requireAuth, async (req, res) => {
   const id = req.params.id;
 
