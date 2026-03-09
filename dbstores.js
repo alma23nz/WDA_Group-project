@@ -42,7 +42,7 @@ async function createTable() {
     console.error("Error creating table", err.stack);
   }
 }
-//createTable();
+// createTable();
 
 // --------------
 // insert the json
@@ -62,7 +62,7 @@ async function insertStoresFromJSON() {
     console.error("Error inserting rows:", error);
   }
 }
-//insertStoresFromJSON();
+// insertStoresFromJSON();
 
 // --------------
 // Select from stores
@@ -166,4 +166,4 @@ async function deleteTable() {
   }
 }
 
-//deleteTable();
+// deleteTable();
