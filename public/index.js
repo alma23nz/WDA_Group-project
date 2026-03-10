@@ -164,7 +164,7 @@ document.getElementById("sortBtn").addEventListener("click", async () => {
   const order = document.getElementById("sortOrder").value;
 
   const response = await fetch(
-    `http://localhost:3000/api/stores?sort=${field}&order=${order}`,
+  `/api/stores?sort=${field}&order=${order}`,
   );
 
   const stores = await response.json();
@@ -256,7 +256,7 @@ async function saveEdit(id, storeDiv) {
     category: storeDiv.querySelector(".editCategory").value,
   };
 
-  await fetch(`http://localhost:3000/api/stores/${id}`, {
+  await fetch(`/api/stores/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -279,7 +279,7 @@ function cancelEdit() {
 // --------------
 async function deleteStore(id) {
   try {
-    await fetch(`http://localhost:3000/api/stores/${id}`, {
+    await fetch(`/api/stores/${id}`, {
       method: "DELETE",
       credentials: "include",
     });
