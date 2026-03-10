@@ -92,12 +92,12 @@ app.get("/api/stores", async (req, res) => {
 
     if (sort) {
       stores.sort((a, b) => {
-        const valA = (a[sort] ?? "").toLowerCase();
-        const valB = (b[sort] ?? "").toLowerCase();
+        const valA = a[sort] ?? ""; 
+        const valB = b[sort] ?? "";
 
-        if (valA < valB) return order === "desc" ? 1 : -1;
-        if (valA > valB) return order === "desc" ? -1 : 1;
-        return 0;
+        if (valA === valB) return 0;                 
+        if (order === "desc") return valA < valB ? 1 : -1; 
+        return valA > valB ? 1 : -1;               
       });
     }
 
