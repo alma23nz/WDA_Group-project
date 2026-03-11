@@ -147,12 +147,6 @@ module.exports = {
   deleteStore,
 };
 
-async function getStoreByID(id) {
-  const result = await client.query("SELECT * FROM stores WHERE id = $1", [id]);
-  return result.rows[0] || null;
-}
-//getStoreByID()
-
 // --------------
 // Delete Table
 // --------------
